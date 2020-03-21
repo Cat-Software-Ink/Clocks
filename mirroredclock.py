@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 # Clock numbers like it's in a mirror
 # Made by Samuel Davenport
+# Requested by Anthony Williams
 
 SCREENSIZE = (25, 75)
 NAME = 'Clock'
