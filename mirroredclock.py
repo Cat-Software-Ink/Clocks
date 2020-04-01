@@ -86,7 +86,7 @@ def run():
                 RUNNING = False
         
         clock.tick(FPS)
-        display_text = time.asctime().split(' ')[3].split(':')
+        display_text = ' '.join(time.asctime().split('  ')).split(' ')[3].split(':')
         screen.fill(WHITE)
         
         x = SCREENSIZE[0]/2-(font_height/2)
