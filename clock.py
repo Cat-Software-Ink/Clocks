@@ -105,7 +105,7 @@ def run():
         screen.fill([255]*3)
         screen.blit(background, (0,0))
         
-        h, m, s = utils.intl(*time.asctime().split(' ')[3].split(':'))
+        h, m, s = utils.intl(*' '.join(time.asctime().split('  ')).split(' ')[3].split(':'))
         h %= 12
         h *= 30
         m *= 6
