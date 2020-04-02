@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 # Vector2 Class for games
 
-from math import *
+from math import sqrt
 
-__version__ = '0.0.2'
+__version__ = '0.0.3'
 NAME = 'Vector2 Module'
 
 class Vector2(object):

@@ -3,13 +3,36 @@
 # Created by Samuel Davenport
 
 NAME = 'Clock'
-__version__ = '0.0.1'
+__version__ = '0.0.2'
 
 SCREENSIZE = (800, 600)
-FPS = 60
+FPS = 2
 
-from pygame.locals import *
-import pygame
+from os import sys, system, abort
+try:
+    from pygame.locals import *
+    import pygame
+except ImportError:# If pygame is not installed, help the user install it.
+    print('Error: Pygame Module is not installed!', file=sys.stderr)
+    while True:
+        answer = input('Would you like to automatically install Pygame? (y/n) : ')
+        if answer.lower() in ('y', 'n'):
+            break
+        else:
+            print('Please type a valid response')
+    if answer.lower() == 'y':
+        print('Attemting to install Pygame...')
+        resp = system('pip3 install Pygame')
+        if str(resp) != '0':
+            print('Something went wrong installing Pygame.')
+            answer = 'n'
+        else:
+            print('Pygame installed successfully! Please restart the program.')
+            input('Press Return to Continue. ')
+    if answer.lower() == 'n':
+        print('To manually install Pygame, go to your system command prompt and type in the command \'pip3 install Pygame\'.')
+        input('Press Return to continue. ')
+    abort()
 from Vector2 import Vector2
 import utils
 from math import sin, cos, radians
@@ -60,12 +83,12 @@ def make_num_sprites():
     middle = Vector2(*utils.amol(SCREENSIZE, d=2))
     pos = []
     for i in range(12):
-        deg = (30 * (i+1))
+        deg = (30 * i)
         pos.append(move_deg(deg, 200, middle))
     
     sprites = []
     for i in range(12):
-        num = str(12 - ((7 + i) % 12))
+        num = str(12 - ((6 + i) % 12))
         #num = str(i+1)
         sprites.append(Sprite('pic/'+num+'.png', pos[i], num))
     return sprites
@@ -73,7 +96,7 @@ def make_num_sprites():
 def run():
     global sprites
     # Initialize the 44KHz 16-bit stereo sound
-    pygame.mixer.pre_init(44100, -16, 2, 1024*4)
+    #pygame.mixer.pre_init(44100, -16, 2, 1024*4) #use for chimes later...
     pygame.init()
     
     screen = pygame.display.set_mode(SCREENSIZE, 0)
@@ -82,8 +105,7 @@ def run():
     background = pygame.surface.Surface(SCREENSIZE).convert()
     middle = Vector2(utils.roundl(*utils.amol(SCREENSIZE, d=2)))
     
-    Sprite('pic/background.png', utils.amol(SCREENSIZE, d=2), 'Background',
-           False).render(background)
+    background.fill([255, 0, 0]) # Make the background red
     pygame.draw.circle(background, [0]*3,   middle, 260)
     pygame.draw.circle(background, [255]*3, middle, 230)
     
@@ -103,13 +125,19 @@ def run():
         screen.unlock()
         
         screen.fill([255]*3)
-        screen.blit(background, (0,0))
+        screen.blit(background, (0, 0))
         
         h, m, s = utils.intl(*' '.join(time.asctime().split('  ')).split(' ')[3].split(':'))
         h %= 12
+        
         h *= 30
         m *= 6
         s *= 6
+        
+        # Get the hands to be like a realistic clock, and not jerky
+        m += ((s / 360) * 6)
+        h += ((m / 360) * 30)
+        
         #h, m, s = utils.amol([h, m, s], s=180)
         
         hpos = Vector2(move_deg(180-h, 120, middle))
@@ -118,7 +146,7 @@ def run():
         
         pygame.draw.line(screen, (255, 0, 0), middle, spos, 10)
         pygame.draw.line(screen, [0]*3, middle, mpos, 10)
-        pygame.draw.line(screen, [0]*3, middle,hpos, 10)
+        pygame.draw.line(screen, [0]*3, middle, hpos, 10)
         
         b = Vector2(1,1)
         pygame.draw.circle(screen, (255, 0, 0), spos+b, 5)

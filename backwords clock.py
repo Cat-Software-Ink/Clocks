@@ -8,10 +8,33 @@ __version__ = '0.0.3'
 SCREENSIZE = (800, 600)
 FPS = 60
 
-from pygame.locals import *
-import pygame
 from math import sin, cos, radians
 from time import asctime
+from os import sys, system, abort
+try:
+    from pygame.locals import *
+    import pygame
+except ImportError:# If pygame is not installed, help the user install it.
+    print('Error: Pygame Module is not installed!', file=sys.stderr)
+    while True:
+        answer = input('Would you like to automatically install Pygame? (y/n) : ')
+        if answer.lower() in ('y', 'n'):
+            break
+        else:
+            print('Please type a valid response')
+    if answer.lower() == 'y':
+        print('Attemting to install Pygame...')
+        resp = system('pip3 install Pygame')
+        if str(resp) != '0':
+            print('Something went wrong installing Pygame.')
+            answer = 'n'
+        else:
+            print('Pygame installed successfully! Please restart the program.')
+            input('Press Return to Continue. ')
+    if answer.lower() == 'n':
+        print('To manually install Pygame, go to your system command prompt and type in the command \'pip3 install Pygame\'.')
+        input('Press Return to continue. ')
+    abort()
 
 def intl(*args):
     data = []
@@ -149,7 +172,7 @@ def run():
         screen.fill([255]*3)
         display.blit(background, (0,0))
         
-        h, m, s = intl(*' '.join(asctime().split('  ')).split(' ')[3].split(':'))
+        h, m, s = intl(*asctime().split(' ')[3].split(':'))
         h %= 12
         h *= 30
         m *= 6
